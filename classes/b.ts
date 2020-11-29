@@ -5,6 +5,9 @@
  * @FilePath: /IoC/container/classes/b.ts
  */
 
+import { Provider } from "../provider/provider"
+
+@Provider('b', [10])
  export class B {
      p: number
      constructor(p: number){

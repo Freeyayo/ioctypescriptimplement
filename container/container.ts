@@ -1,9 +1,11 @@
 /*
  * @Date: 2020-11-28 15:07:37
  * @LastEditors: Conghao Cai🔧
- * @LastEditTime: 2020-11-28 16:56:46
+ * @LastEditTime: 2020-11-29 16:51:21
  * @FilePath: /IoC/container/container.ts
  */
+
+import { PROPS_KEY } from "../injector/inject"
 
 
 /**
@@ -28,7 +30,7 @@ export class Container {
         try {
             this.registerMap.set(id, {
                 clazz,
-                constructorArgs
+                constructorArgs: constructorArgs || []
             })
             return true
         } catch(e) {
@@ -45,7 +47,15 @@ export class Container {
     getInst<T>(id: string): T{
         const target = this.registerMap.get(id)
         const { clazz, constructorArgs } = target
+
+        const props = Reflect.getMetadata(PROPS_KEY, clazz)
         const inst = Reflect.construct(clazz, constructorArgs)
+
+        for(const prop in props) {
+            const identifier = props[prop].value
+            inst[prop] = this.getInst(identifier)
+        }
+        
         return inst
     }
 }
